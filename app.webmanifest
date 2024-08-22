@@ -1,0 +1,66 @@
+{
+  "categories": ["productivity"],
+  "description": "Player for local videos with keyboard shortcuts.",
+  "display": "standalone",
+  "file_handlers": [
+    {
+      "accept": {
+        "video/3gpp": [".3gp"],
+        "video/3gpp2": [".3g2"],
+        "video/avi": [".avi"],
+        "video/mp2t": [".ts"],
+        "video/mp4": [".mp4"],
+        "video/mpeg": [".mpeg"],
+        "video/ogg": [".ogv"],
+        "video/webm": [".webm"]
+      },
+      "action": "/?utm_source=pwa"
+    }
+  ],
+  "icons": [
+    {
+      "sizes": "any",
+      "src": "icons/icon.svg",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "/?utm_source=pwa",
+  "name": "Video player",
+  "orientation": "landscape",
+  "screenshots": [
+    {
+      "form_factor": "wide",
+      "label": "Selection screen (light)",
+      "platform": "macos",
+      "sizes": "2316x1780",
+      "src": "images/screenshots/selection_screen_light.png",
+      "type": "image/png"
+    },
+    {
+      "form_factor": "wide",
+      "label": "Selection screen (dark)",
+      "platform": "macos",
+      "sizes": "2316x1780",
+      "src": "images/screenshots/selection_screen_dark.png",
+      "type": "image/png"
+    },
+    {
+      "form_factor": "wide",
+      "label": "Video screen (light)",
+      "platform": "macos",
+      "sizes": "2316x1780",
+      "src": "images/screenshots/video_screen_light.png",
+      "type": "image/png"
+    },
+    {
+      "form_factor": "wide",
+      "label": "Video screen (dark)",
+      "platform": "macos",
+      "sizes": "2316x1780",
+      "src": "images/screenshots/video_screen_dark.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?utm_source=pwa"
+}

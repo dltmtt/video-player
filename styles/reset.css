@@ -1,0 +1,52 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  border: none;
+  user-select: none;
+  cursor: pointer;
+
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+input {
+  font-family: inherit;
+
+  &[type="number"] {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+    cursor: text;
+
+    &::-webkit-inner-spin-button {
+      cursor: pointer;
+    }
+  }
+
+  &[type="range"] {
+    font-size: inherit;
+
+    &::-webkit-slider-thumb-runnable-track {
+      cursor: pointer;
+    }
+
+    &::-webkit-slider-thumb {
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+  }
+}
