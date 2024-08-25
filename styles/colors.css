@@ -1,15 +1,12 @@
 :root {
   /* Light theme */
   --light: hsl(var(--hue) var(--saturation) var(--lightness));
-
   --text1-light: hsl(var(--hue) var(--saturation) 10%);
   --text2-light: hsl(var(--hue) 30% 30%);
-
   --surface1-light: hsl(var(--hue) 25% 90%);
   --surface2-light: hsl(var(--hue) 20% 99%);
   --surface3-light: hsl(var(--hue) 20% 92%);
   --surface4-light: hsl(var(--hue) 20% 85%);
-
   --surface-shadow-light: var(--hue) 10% 20%;
   --shadow-strength-light: 2%;
 
@@ -17,15 +14,12 @@
   --dark: hsl(
     var(--hue) calc(var(--saturation) / 2) calc(var(--lightness) / 1.5)
   );
-
   --text1-dark: hsl(var(--hue) 15% 85%);
   --text2-dark: hsl(var(--hue) 5% 65%);
-
   --surface1-dark: hsl(var(--hue) 10% 10%);
   --surface2-dark: hsl(var(--hue) 10% 15%);
   --surface3-dark: hsl(var(--hue) 5% 20%);
   --surface4-dark: hsl(var(--hue) 5% 25%);
-
   --surface-shadow-dark: var(--hue) 50% 3%;
   --shadow-strength-dark: 80%;
 
