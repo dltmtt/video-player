@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: [error, { "caughtErrors": "none" }] */
+
 "use strict";
 
 let preferences = {
@@ -100,7 +102,9 @@ filePicker?.addEventListener("click", async () => {
     showLoadingScreen();
 
     manageFileHandle(fileHandle);
-  } catch (abortError) {}
+  } catch (abortError) {
+    // User cancelled the file picker, do nothing
+  }
 });
 
 // FILE HANDLING
@@ -319,6 +323,7 @@ document.addEventListener("keydown", (e) => {
   switch (e.key) {
     case " ": // Toggle play
       if (document.activeElement.tagName === "BUTTON") break;
+    // Falls through
     case "k":
       togglePlay();
       break;
