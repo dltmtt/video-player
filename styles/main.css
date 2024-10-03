@@ -15,9 +15,7 @@
 
 body {
   block-size: 100vb;
-  font:
-    0.8375rem "JetBrains Mono",
-    monospace;
+  font: 0.8375rem "JetBrains Mono", monospace;
 }
 
 #drag-panel,
