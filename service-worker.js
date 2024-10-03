@@ -1,7 +1,9 @@
 const CACHE_NAME = "video-player-pwa-cache-v2";
-const GOOGLE_FONTS_CSS = "https://fonts.googleapis.com";
-const GOOGLE_FONTS_FONTS = "https://fonts.gstatic.com";
-const resourcesToCache = [
+const dynamicResourcesToCache = [
+  "https://fonts.googleapis.com",
+  "https://fonts.gstatic.com",
+];
+const staticResourcesToCache = [
   "/?utm_source=pwa",
   "/index.html",
   "/styles/reset.css",
@@ -13,7 +15,7 @@ const resourcesToCache = [
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(resourcesToCache);
+      return cache.addAll(staticResourcesToCache);
     }),
   );
 });
@@ -21,10 +23,7 @@ self.addEventListener("install", (e) => {
 self.addEventListener("fetch", (e) => {
   const requestUrl = new URL(e.request.url);
 
-  if (
-    requestUrl.origin === GOOGLE_FONTS_CSS ||
-    requestUrl.origin === GOOGLE_FONTS_FONTS
-  ) {
+  if (dynamicResourcesToCache.includes(requestUrl.origin)) {
     e.respondWith(
       caches.open(CACHE_NAME).then(async (cache) => {
         // Check if the request is already in the cache
@@ -40,6 +39,7 @@ self.addEventListener("fetch", (e) => {
       }),
     );
   } else {
+    // Return the resource from the cache if it exists, otherwise fetch it
     e.respondWith(
       caches.match(e.request).then((response) => {
         return response || fetch(e.request);
