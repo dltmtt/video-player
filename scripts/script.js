@@ -1,22 +1,7 @@
-/* eslint no-unused-vars: [error, { "caughtErrors": "none" }] */
-
-"use strict";
-
-let preferences = {
+const preferences = {
   speed: 1.8,
   timeSkip: 10,
 };
-
-const supportedVideoType = [
-  ".avi",
-  ".mp4",
-  ".mpeg",
-  ".ogv",
-  ".ts",
-  ".webm",
-  ".3gp",
-  ".3g2",
-];
 
 // SERVICE WORKER
 // --------------
@@ -39,21 +24,18 @@ const droppableElements = document.querySelectorAll(".droppable");
 const message = document.querySelector("#message");
 const fileName = document.querySelector("#file-name");
 const video = document.querySelector("video");
-var localStorageKey;
+let localStorageKey;
 
-droppableElements.forEach((droppable) => {
+for (const droppable of droppableElements) {
   droppable.addEventListener("dragenter", (e) => {
-    let type = e.dataTransfer.items[0].type;
-    let extension = type.substring(type.indexOf("/") + 1);
-    if (
-      type.startsWith("video/") &&
-      supportedVideoType.includes("." + extension)
-    ) {
+    const type = e.dataTransfer.items[0].type.split("/")[0];
+
+    if (type === "video") {
       droppable.dataset.fileHover = true;
       dropOverlay.hidden = false;
     }
   });
-});
+}
 
 dropOverlay.addEventListener("dragover", (e) => e.preventDefault());
 
@@ -76,9 +58,9 @@ dropOverlay.addEventListener("dragleave", handleDragEnd);
 
 function handleDragEnd() {
   dropOverlay.hidden = true;
-  droppableElements.forEach((droppable) => {
+  for (const droppable of droppableElements) {
     delete droppable.dataset.fileHover;
-  });
+  }
 }
 
 // FILE INPUT
@@ -92,7 +74,7 @@ filePicker?.addEventListener("click", async () => {
         {
           description: "Videos",
           accept: {
-            "video/*": supportedVideoType,
+            "video/*": [], // Chrome uses the MIME type, not the file extensions
           },
         },
       ],
@@ -159,7 +141,7 @@ async function manageFileHandle(fileHandle) {
 
 document.addEventListener("DOMContentLoaded", () => {
   window.launchQueue.setConsumer((launchParams) => {
-    if (launchParams.files && launchParams.files.length) {
+    if (launchParams.files?.length) {
       const file = launchParams.files[0];
       showLoadingScreen();
       manageFileHandle(file);
@@ -204,13 +186,13 @@ video.onratechange = () => {
 
 speedControls.onchange = () => {
   // Caused by keyboard shortcuts
-  speedControls.value = parseFloat(speedControls.value).toFixed(2);
+  speedControls.value = Number.parseFloat(speedControls.value).toFixed(2);
   video.playbackRate = clamp(0.1, speedControls.value, 16);
 };
 
 speedControls.oninput = () => {
   // Caused by keyboard input
-  speedControls.value = parseFloat(speedControls.value).toFixed(2);
+  speedControls.value = Number.parseFloat(speedControls.value).toFixed(2);
 };
 
 // Zoom
@@ -322,9 +304,8 @@ document.addEventListener("keydown", (e) => {
 
   switch (e.key) {
     case " ": // Toggle play
-      if (document.activeElement.tagName === "BUTTON") break;
-    // Falls through
     case "k":
+      if (document.activeElement.tagName === "BUTTON") break;
       togglePlay();
       break;
     case "s": // Slow down
@@ -454,7 +435,7 @@ async function hashFile(file) {
 }
 
 function updateLocalStorage() {
-  let state = {
+  const state = {
     timer: video.currentTime,
     playbackRate: video.playbackRate,
     lastOpened: Date.now(),
@@ -464,7 +445,7 @@ function updateLocalStorage() {
 }
 
 function restoreFromLocalStorage() {
-  let state = JSON.parse(localStorage.getItem(localStorageKey));
+  const state = JSON.parse(localStorage.getItem(localStorageKey));
   video.currentTime = state.timer;
   video.playbackRate = state.playbackRate;
   timeIndicator.dataset.state = state.timeIndicator;
