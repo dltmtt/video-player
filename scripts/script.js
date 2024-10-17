@@ -186,11 +186,6 @@ speedControls.onchange = () => {
   video.playbackRate = clamp(0.1, speedControls.value, 16);
 };
 
-speedControls.oninput = () => {
-  // Caused by keyboard input
-  speedControls.value = Number.parseFloat(speedControls.value).toFixed(2);
-};
-
 // Zoom
 zoomBtn.onclick = toggleZoom;
 
@@ -280,13 +275,11 @@ video.onended = () => {
 };
 
 // KEYBOARD SHORTCUTS
-// ------------------
-
 document.addEventListener("keydown", (e) => {
   // Ignore key presses when a modifier key is pressed
   if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
 
-  if (e.key !== " ") {
+  if (document.activeElement.tagName !== "INPUT" && e.key === " ") {
     document.activeElement.blur();
   }
 
@@ -408,8 +401,6 @@ function millisecondsToTimeOfDay(milliseconds) {
 }
 
 // UTILITIES
-// ---------
-
 async function hashFile(file) {
   // Get byte array of file
   const arrayBuffer = await file.arrayBuffer();
