@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
@@ -81,11 +81,12 @@
 
       <button
         type="button"
-        aria-label="Toggle time elapsed/remaining"
+        aria-label="Toggle time indicator"
         id="time-indicator-toggle"
+        data-state="default"
       >
-        <time role="timer" id="time-indicator" data-state="elapsed">00:00</time>
-        <time role="timer" id="duration"></time>
+        <time role="timer" id="time-indicator">00:00</time>
+        <time role="timer" id="duration-or-finish-at"></time>
       </button>
       <div aria-label="Video name" id="file-name-container">
         <span id="file-name"></span>

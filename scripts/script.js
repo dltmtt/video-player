@@ -4,19 +4,32 @@ const preferences = {
 };
 
 // SERVICE WORKER
-// --------------
 navigator.serviceWorker.register("service-worker.js");
 
-// VIDEO SELECTION
-// ---------------
-
-// DRAG AND DROP
+// HTML ELEMENTS
 const dragPanel = document.querySelector("#drag-panel");
 const dropOverlay = document.querySelector("#drop-overlay");
 const droppableElements = document.querySelectorAll(".droppable");
 const message = document.querySelector("#message");
 const fileName = document.querySelector("#file-name");
 const video = document.querySelector("video");
+
+const filePicker = document.querySelector("#file-picker");
+
+const player = document.querySelector("#player");
+const playBtn = document.querySelector("#play-btn");
+const fullscreenBtn = document.querySelector("#fullscreen-btn");
+const zoomBtn = document.querySelector("#zoom-btn");
+const speedControls = document.querySelector("#speed-controls");
+
+const progressBar = document.querySelector("#video-bar");
+const timeIndicatorToggle = document.querySelector("#time-indicator-toggle");
+const timeIndicator = document.querySelector("#time-indicator");
+const replayBtn = document.querySelector("#replay-btn");
+const forwardBtn = document.querySelector("#forward-btn");
+const durationOrFinishAt = document.querySelector("#duration-or-finish-at");
+
+// DRAG AND DROP
 let localStorageKey;
 
 for (const droppable of droppableElements) {
@@ -57,8 +70,6 @@ function handleDragEnd() {
 }
 
 // FILE INPUT
-const filePicker = document.querySelector("#file-picker");
-
 filePicker?.addEventListener("click", async () => {
   try {
     const [fileHandle] = await window.showOpenFilePicker({
@@ -100,7 +111,7 @@ async function manageFileHandle(fileHandle) {
   }
 
   // Don't change the order of these two lines! Otherwise, the loadedmetadata event
-  // fires before a new hash is computer and if I drag 'n' drop another video, the
+  // fires before a new hash is computed and if I drag 'n' drop another video, the
   // previous video's state is restored instead of the new one's
   localStorageKey = await hashFile(file);
   video.src = URL.createObjectURL(file);
@@ -143,15 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // CONTROL PLAYBACK
-// ----------------
-
-// NAVIGATION
-const player = document.querySelector("#player");
-const playBtn = document.querySelector("#play-btn");
-const fullscreenBtn = document.querySelector("#fullscreen-btn");
-const zoomBtn = document.querySelector("#zoom-btn");
-const speedControls = document.querySelector("#speed-controls");
-
 // Play/pause
 playBtn.onclick = togglePlay;
 video.onclick = togglePlay;
@@ -175,6 +177,7 @@ video.addEventListener("dblclick", toggleFullScreen);
 // Speed
 video.onratechange = () => {
   speedControls.value = video.playbackRate.toFixed(2);
+  updateTimeIndicator();
 };
 
 speedControls.onchange = () => {
@@ -192,15 +195,6 @@ speedControls.oninput = () => {
 zoomBtn.onclick = toggleZoom;
 
 // TIME
-// ----
-
-const progressBar = document.querySelector("#video-bar");
-const timeIndicatorToggle = document.querySelector("#time-indicator-toggle");
-const timeIndicator = document.querySelector("#time-indicator");
-const replayBtn = document.querySelector("#replay-btn");
-const forwardBtn = document.querySelector("#forward-btn");
-const duration = document.querySelector("#duration");
-
 video.addEventListener("loadedmetadata", () => {
   if (localStorage.getItem(localStorageKey)) {
     restoreFromLocalStorage();
@@ -209,7 +203,6 @@ video.addEventListener("loadedmetadata", () => {
   updateProgressBarValue();
   updateProgressBarVisually();
   updateTimeIndicator();
-  duration.textContent = secondsToTime(video.duration);
 });
 
 video.addEventListener("timeupdate", () => {
@@ -240,12 +233,15 @@ function updateProgressBarVisually() {
 }
 
 function updateTimeIndicator() {
-  if (timeIndicator.dataset.state === "elapsed") {
+  if (timeIndicatorToggle.dataset.state === "default") {
     timeIndicator.textContent = secondsToTime(video.currentTime);
+    durationOrFinishAt.textContent = secondsToTime(video.duration);
   } else {
-    timeIndicator.textContent = `-${secondsToTime(
-      video.duration - video.currentTime,
-    )}`;
+    timeLeft = video.duration - video.currentTime;
+    timeIndicator.textContent = `${secondsToTime(timeLeft)} left`;
+
+    currentTime = new Date().getTime();
+    durationOrFinishAt.textContent = `Finish at ${millisecondsToTimeOfDay(currentTime + (timeLeft * 1000) / video.playbackRate)}`;
   }
 }
 
@@ -257,7 +253,6 @@ progressBar.onfocus = () => {
 replayBtn.onclick = replay;
 forwardBtn.onclick = forward;
 
-// Toggle current time/remaining time
 timeIndicatorToggle.addEventListener("click", toggleTimeIndicator);
 
 video.addEventListener("emptied", () => {
@@ -390,10 +385,10 @@ function toggleZoom() {
 }
 
 function toggleTimeIndicator() {
-  if (timeIndicator.dataset.state === "elapsed") {
-    timeIndicator.dataset.state = "remaining";
+  if (timeIndicatorToggle.dataset.state === "default") {
+    timeIndicatorToggle.dataset.state = "alternate";
   } else {
-    timeIndicator.dataset.state = "elapsed";
+    timeIndicatorToggle.dataset.state = "default";
   }
   updateTimeIndicator();
 }
@@ -404,6 +399,12 @@ function secondsToTime(seconds) {
   return new Date(seconds * 1000)
     .toISOString()
     .substring(seconds >= 3600 ? 12 : 14, 19);
+}
+
+function millisecondsToTimeOfDay(milliseconds) {
+  return new Date(milliseconds).toLocaleTimeString([], {
+    timeStyle: "short",
+  });
 }
 
 // UTILITIES

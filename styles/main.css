@@ -184,10 +184,18 @@ body {
   white-space: nowrap;
   border-radius: 1.25rem;
   padding-inline: var(--spacing);
-}
 
-#duration::before {
-  content: " / ";
+  &[data-state="default"] {
+    #duration-or-finish-at::before {
+      content: " / ";
+    }
+  }
+
+  &[data-state="alternate"] {
+    #duration-or-finish-at::before {
+      content: " · ";
+    }
+  }
 }
 
 #file-name-container {
