@@ -279,7 +279,8 @@ document.addEventListener("keydown", (e) => {
   // Ignore key presses when a modifier key is pressed
   if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
 
-  if (document.activeElement.tagName !== "INPUT" && e.key === " ") {
+  // Sometimes somehow when a button is pressed, an element is focused
+  if (e.key !== " " && document.activeElement.tagName !== "INPUT") {
     document.activeElement.blur();
   }
 
