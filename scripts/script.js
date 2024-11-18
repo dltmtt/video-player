@@ -31,6 +31,7 @@ const durationOrFinishAt = document.querySelector("#duration-or-finish-at");
 
 // DRAG AND DROP
 let localStorageKey;
+const LOCAL_STORAGE_NAMESPACE = "video-player_";
 
 for (const droppable of droppableElements) {
   droppable.addEventListener("dragenter", (e) => {
@@ -113,7 +114,7 @@ async function manageFileHandle(fileHandle) {
   // Don't change the order of these two lines! Otherwise, the loadedmetadata event
   // fires before a new hash is computed and if I drag 'n' drop another video, the
   // previous video's state is restored instead of the new one's
-  localStorageKey = await hashFile(file);
+  localStorageKey = `${LOCAL_STORAGE_NAMESPACE}${await hashFile(file)}`;
   video.src = URL.createObjectURL(file);
 
   // Update the media session on first play
@@ -264,6 +265,7 @@ window.onbeforeunload = () => {
 
 // CLEANUP
 for (const key of Object.keys(localStorage)) {
+  if (!key.startsWith(LOCAL_STORAGE_NAMESPACE)) continue;
   const entryDate = new Date(JSON.parse(localStorage.getItem(key)).lastOpened);
   if (entryDate < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)) {
     localStorage.removeItem(key);
