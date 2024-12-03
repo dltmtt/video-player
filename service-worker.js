@@ -1,4 +1,4 @@
-const CACHE_NAME = "video-player-pwa-cache-v5";
+const CACHE_NAME = "video-player-pwa-cache-v6";
 const dynamicResourcesToCache = [
   "https://fonts.googleapis.com",
   "https://fonts.gstatic.com",
