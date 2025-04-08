@@ -130,7 +130,11 @@ async function manageFileHandle(fileHandle) {
 
   // Bind the global media controls to the video
   navigator.mediaSession.setActionHandler("seekbackward", replay);
+  navigator.mediaSession.setActionHandler("previoustrack", replay);
+  navigator.mediaSession.setActionHandler("previousslide", replay);
   navigator.mediaSession.setActionHandler("seekforward", forward);
+  navigator.mediaSession.setActionHandler("nexttrack", forward);
+  navigator.mediaSession.setActionHandler("nextslide", forward);
 
   // If the fonts are not loaded in 100ms, show the player anyway
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
