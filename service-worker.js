@@ -12,11 +12,6 @@ const staticResourcesToCache = [
   "/scripts/script.js",
 ];
 
-// Open the extension page when the extension icon is clicked
-chrome.action.onClicked.addListener(() => {
-  chrome.tabs.create({ url: chrome.runtime.getURL("index.html") });
-});
-
 self.addEventListener("install", (e) => {
   // Filter out resources that are not served over HTTP, e.g., Chrome extension resources
   if (!e.request.url.startsWith("http")) {
