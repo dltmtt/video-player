@@ -44,10 +44,21 @@ self.addEventListener("fetch", (e) => {
       }),
     );
   } else {
-    // Return the resource from the cache if it exists, otherwise fetch it
+    // Return the resource from the cache if it exists, otherwise use preloaded response or fetch it
     e.respondWith(
-      caches.match(e.request).then((response) => {
-        return response || fetch(e.request);
+      caches.match(e.request).then(async (response) => {
+        if (response) {
+          return response;
+        }
+
+        // Use preloaded response if available
+        const preloadResponse = await e.preloadResponse;
+        if (preloadResponse) {
+          return preloadResponse;
+        }
+
+        // Otherwise, fetch the resource
+        return fetch(e.request);
       }),
     );
   }
@@ -55,14 +66,21 @@ self.addEventListener("fetch", (e) => {
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+    (async () => {
+      // Enable navigation preload
+      if (self.registration.navigationPreload) {
+        await self.registration.navigationPreload.enable();
+      }
+
+      // Clean up old caches
+      const cacheNames = await caches.keys();
+      await Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         }),
       );
-    }),
+    })(),
   );
 });
