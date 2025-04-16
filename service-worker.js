@@ -14,7 +14,7 @@ const staticResourcesToCache = [
 
 self.addEventListener("install", (e) => {
   // Filter out resources that are not served over HTTP, e.g., Chrome extension resources
-  if (!e.request.url.startsWith("http")) {
+  if (!e.request?.url.startsWith("http")) {
     return;
   }
 
