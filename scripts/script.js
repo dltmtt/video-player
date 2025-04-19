@@ -423,16 +423,17 @@ async function computeFileSignature(
     lastPart.arrayBuffer(),
   ]);
 
-  // Convert the file size to string and encode to a Uint8Array
-  const fileSize = new TextEncoder().encode(file.size.toString());
+  // Create a buffer for the file size
+  const sizeBuffer = new ArrayBuffer(8);
+  new DataView(sizeBuffer).setBigUint64(0, BigInt(file.size));
 
   // Concatenate the array buffers and the file size buffer
   const combined = new Uint8Array(
-    chunksData[0].byteLength + chunksData[1].byteLength + fileSize.byteLength,
+    chunksData[0].byteLength + chunksData[1].byteLength + sizeBuffer.byteLength,
   );
   combined.set(new Uint8Array(chunksData[0]), 0);
   combined.set(new Uint8Array(chunksData[1]), chunksData[0].byteLength);
-  combined.set(fileSize, chunksData[0].byteLength + chunksData[1].byteLength);
+  combined.set(sizeBuffer, chunksData[0].byteLength + chunksData[1].byteLength);
 
   // Hash the combined buffer
   const hash = await crypto.subtle.digest(algorithm, combined);
