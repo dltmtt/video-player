@@ -114,7 +114,7 @@ async function manageFileHandle(fileHandle) {
   // Don't change the order of these two lines! Otherwise, the loadedmetadata event
   // fires before a new hash is computed and if I drag 'n' drop another video, the
   // previous video's state is restored instead of the new one's
-  localStorageKey = `${LOCAL_STORAGE_NAMESPACE}${await hashFile(file)}`;
+  localStorageKey = `${LOCAL_STORAGE_NAMESPACE}${await hashStartAndEndOfFile(file)}`;
   video.src = URL.createObjectURL(file);
 
   // Update the media session on first play
@@ -408,22 +408,31 @@ function millisecondsToTimeOfDay(milliseconds) {
 }
 
 // UTILITIES
-async function hashFile(file) {
+async function hashStartAndEndOfFile(file, chunkSize = 1024 * 1024) {
+  // Get the first and last chunk of the file
+  const firstPart = file.slice(0, chunkSize);
+  const lastPart = file.slice(-chunkSize);
+
   // Get byte array of file
-  const arrayBuffer = await file.arrayBuffer();
+  const arrayBuffers = await Promise.all([
+    firstPart.arrayBuffer(),
+    lastPart.arrayBuffer(),
+  ]);
+
+  // Concatenate the two array buffers
+  const arrayBuffer = new Uint8Array(
+    arrayBuffers[0].byteLength + arrayBuffers[1].byteLength,
+  );
+  arrayBuffer.set(new Uint8Array(arrayBuffers[0]), 0);
+  arrayBuffer.set(new Uint8Array(arrayBuffers[1]), arrayBuffers[0].byteLength);
 
   // Hash the byte array
   const hashAsArrayBuffer = await crypto.subtle.digest("SHA-1", arrayBuffer);
 
-  // Get the hex value of each byte and store it in an array
-  const hashAsUint8 = new Uint8Array(hashAsArrayBuffer);
-  const hashAsArray = Array.from(hashAsUint8);
-
-  // Convert each byte to a hex string
-  const hashAsString = hashAsArray
+  // Convert the hash to a hex string
+  return Array.from(new Uint8Array(hashAsArrayBuffer))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-  return hashAsString;
 }
 
 function updateLocalStorage() {
