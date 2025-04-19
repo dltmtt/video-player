@@ -114,7 +114,7 @@ async function manageFileHandle(fileHandle) {
   // Don't change the order of these two lines! Otherwise, the loadedmetadata event
   // fires before a new hash is computed and if I drag 'n' drop another video, the
   // previous video's state is restored instead of the new one's
-  localStorageKey = `${LOCAL_STORAGE_NAMESPACE}${await hashStartAndEndOfFile(file)}`;
+  localStorageKey = `${LOCAL_STORAGE_NAMESPACE}${await computeFileSignature(file)}`;
   video.src = URL.createObjectURL(file);
 
   // Update the media session on first play
@@ -408,29 +408,37 @@ function millisecondsToTimeOfDay(milliseconds) {
 }
 
 // UTILITIES
-async function hashStartAndEndOfFile(file, chunkSize = 1024 * 1024) {
+async function computeFileSignature(
+  file,
+  chunkSize = 1024 * 1024, // 1 MB
+  algorithm = "SHA-1", // Prefer speed over security
+) {
   // Get the first and last chunk of the file
   const firstPart = file.slice(0, chunkSize);
   const lastPart = file.slice(-chunkSize);
 
-  // Get byte array of file
-  const arrayBuffers = await Promise.all([
+  // Read the file chunks as array buffers
+  const chunksData = await Promise.all([
     firstPart.arrayBuffer(),
     lastPart.arrayBuffer(),
   ]);
 
-  // Concatenate the two array buffers
-  const arrayBuffer = new Uint8Array(
-    arrayBuffers[0].byteLength + arrayBuffers[1].byteLength,
-  );
-  arrayBuffer.set(new Uint8Array(arrayBuffers[0]), 0);
-  arrayBuffer.set(new Uint8Array(arrayBuffers[1]), arrayBuffers[0].byteLength);
+  // Convert the file size to string and encode to a Uint8Array
+  const fileSize = new TextEncoder().encode(file.size.toString());
 
-  // Hash the byte array
-  const hashAsArrayBuffer = await crypto.subtle.digest("SHA-1", arrayBuffer);
+  // Concatenate the array buffers and the file size buffer
+  const combined = new Uint8Array(
+    chunksData[0].byteLength + chunksData[1].byteLength + fileSize.byteLength,
+  );
+  combined.set(new Uint8Array(chunksData[0]), 0);
+  combined.set(new Uint8Array(chunksData[1]), chunksData[0].byteLength);
+  combined.set(fileSize, chunksData[0].byteLength + chunksData[1].byteLength);
+
+  // Hash the combined buffer
+  const hash = await crypto.subtle.digest(algorithm, combined);
 
   // Convert the hash to a hex string
-  return Array.from(new Uint8Array(hashAsArrayBuffer))
+  return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }
