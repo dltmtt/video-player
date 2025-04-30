@@ -32,6 +32,9 @@ self.addEventListener("fetch", (e) => {
       const cachedResponse = await cache.match(e.request);
       if (cachedResponse) return cachedResponse;
 
+      const preloadedResponse = await e.preloadResponse;
+      if (preloadedResponse) return preloadedResponse;
+
       if (dynamicResourcesToCache.includes(requestUrl.origin)) {
         const networkResponse = await fetch(e.request);
         if (networkResponse?.ok) {
@@ -40,8 +43,7 @@ self.addEventListener("fetch", (e) => {
         return networkResponse;
       }
 
-      const preloadedResponse = await e.preloadResponse;
-      return preloadedResponse || fetch(e.request);
+      return fetch(e.request);
     })(),
   );
 });
