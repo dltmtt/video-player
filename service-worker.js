@@ -32,9 +32,6 @@ self.addEventListener("fetch", (e) => {
       const cachedResponse = await cache.match(e.request);
       if (cachedResponse) return cachedResponse;
 
-      const preloadedResponse = await e.preloadResponse;
-      if (preloadedResponse) return preloadedResponse;
-
       if (dynamicResourcesToCache.includes(requestUrl.origin)) {
         const networkResponse = await fetch(e.request);
         if (networkResponse?.ok) {
@@ -51,11 +48,6 @@ self.addEventListener("fetch", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     (async () => {
-      // Enable navigation preload
-      if (self.registration.navigationPreload) {
-        await self.registration.navigationPreload.enable();
-      }
-
       // Clean up old caches
       const cacheNames = await caches.keys();
       await Promise.all(
