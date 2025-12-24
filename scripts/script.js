@@ -89,7 +89,7 @@ filePicker?.addEventListener("click", async () => {
     showLoadingScreen();
 
     manageFileHandle(fileHandle);
-  } catch (abortError) {
+  } catch (_abortError) {
     // User cancelled the file picker, do nothing
   }
 });
@@ -240,7 +240,7 @@ function updateTimeIndicator() {
     timeLeft = video.duration - video.currentTime;
     timeIndicator.textContent = `${secondsToTime(timeLeft)} left`;
 
-    currentTime = new Date().getTime();
+    currentTime = Date.now();
     durationOrFinishAt.textContent = `Finish at ${millisecondsToTimeOfDay(currentTime + (timeLeft * 1000) / video.playbackRate)}`;
   }
 }

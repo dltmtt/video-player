@@ -55,6 +55,7 @@ self.addEventListener("activate", (e) => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
+          return null;
         }),
       );
     })(),
